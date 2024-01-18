@@ -51,8 +51,9 @@ class ClassWriter:
         post_import_str += f"class {self.schema.class_name}(BaseModel):"
         post_import_str += '\n'
 
-        if self.schema.description is not None:
-            post_import_str += "\t\"\"\"\n" + '\t' + self.schema.description + '\n\t' + "\"\"\""
+        doc_string = self._format_docstring()
+
+        post_import_str += "\t\"\"\"\n" + '\t' + doc_string + '\n\t' + "\"\"\""
 
         post_import_str += '\n'
 
@@ -74,6 +75,22 @@ class ClassWriter:
 
         with open(join("schemas", file_name), "w") as f:
             f.write(string)
+
+    def _format_docstring(self):
+        doc_string = f"{self.schema.class_name} class"
+        doc_string += '\n'
+        doc_string += '\n'
+        doc_string += '\t' + "Attributes"
+        doc_string += '\n'
+        doc_string += '\t' + "----------"
+        doc_string += '\n'
+        for attribute_name, attribute in self.schema.properties.items():
+            doc_string += '\t' + attribute_name + ":  " + '`' + attribute.type + '`'
+            doc_string += '\n'
+            if attribute.description is not None:
+                doc_string += '\t\t' + attribute.description.replace('\n', '\n\t\t')
+            doc_string += '\n'
+        return doc_string
 
     def _format_attribute(self, attribute_name: str, attribute: PydanticSchemaModel) -> Tuple[str, Tuple[str, str] | None]:
 
