@@ -11,13 +11,21 @@ def on_error(parser: ArgumentParser):
     return wrapper
 
 
-def parse_args() -> Tuple[str, str | None]:
+def parse_args() -> Tuple[str, str | None, bool | None]:
     argument_parser = ArgumentParser(
         prog=PROG_NAME,
         description=PROG_DESCRIPTION
     )
     argument_parser.error = on_error(argument_parser)
-    argument_parser.add_argument("--file_name", required=True)
-    argument_parser.add_argument("--module_name", required=False)
+    argument_parser.add_argument("-f", "--file_name",
+                                 required=True,
+                                 help="jsonschema file name")
+    argument_parser.add_argument("-m", "--module_name",
+                                 required=False,
+                                 help="module directory to save classes")
+    argument_parser.add_argument("-v", "--verbose",
+                                 required=False,
+                                 type=bool,
+                                 help="whether to log field during parsing")
     args = argument_parser.parse_args()
-    return args.file_name, args.module_name
+    return args.file_name, args.module_name, args.verbose

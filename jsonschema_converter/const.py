@@ -1,5 +1,5 @@
 from typing import Final
 
 FORMAT : Final[str] = "{time:YYYY-MM-DD HH:mm:ss} | {level} | jsonschema-converter | {message}"
-PROG_NAME: Final[str] = "JsonSchema2Pydantic"
-PROG_DESCRIPTION: Final[str] = "creates classes from json_schema file"
+PROG_NAME: Final[str] = "jsonschema-convert"
+PROG_DESCRIPTION: Final[str] = "creates pydantic classes according to json_schema file"
