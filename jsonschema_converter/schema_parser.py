@@ -1,7 +1,7 @@
-from os.path import join
 from re import Match, sub
 
 from pydantic import ValidationError
+from loguru import logger
 
 from jsonschema_converter.class_writer import ClassWriter
 from jsonschema_converter.models.json_schema_model import JsonSchemaModel
@@ -54,7 +54,8 @@ class SchemaParser:
                 raise ValueError(f"schema is not a valid json schema:\n{str(err)}") from err
         return self._schema
 
-    def parse(self) -> PydanticSchemaModel:
+    def parse(self, module_name: str) -> PydanticSchemaModel:
+        logger.info(f"parse - {self.name}")
         original_json = self.schema
         if original_json.type is not None:
             pydantic_type = SchemaParser.from_json_to_pydantic_types(original_json.type)
@@ -63,12 +64,11 @@ class SchemaParser:
             if original_json.any_of is not None:
                 pydantic_type = SchemaParser.from_json_to_pydantic_types()
                 any_of = [
-                    SchemaParser(any_of, "").parse()
+                    SchemaParser(any_of, "").parse(module_name)
                     for any_of in original_json.any_of
                 ]
             else:
                 raise ValueError("schema has no 'type' nor 'anyOf' field")
-        print(self.name, ": ", original_json.description)
         original_pydantic = PydanticSchemaModel(
             name=self.name,
             type=pydantic_type,
@@ -92,20 +92,20 @@ class SchemaParser:
                     property_name = "_" + property_name
 
                 property_parser = SchemaParser(property_schema, property_name)
-                original_pydantic.properties[property_name] = property_parser.parse()
+                original_pydantic.properties[property_name] = property_parser.parse(module_name)
 
         if original_pydantic.type == "List":
             if original_json.items.type == "object":
                 name = self.name + "_item"
                 items_parser = SchemaParser(original_json.items, name)
-                original_pydantic.items = items_parser.parse()
+                original_pydantic.items = items_parser.parse(module_name)
             else:
-                items_parser = SchemaParser(original_json.items, "")
-                original_pydantic.items = items_parser.parse()
+                items_parser = SchemaParser(original_json.items, "list")
+                original_pydantic.items = items_parser.parse(module_name)
 
         if original_pydantic.enum is not None:
             original_pydantic.type = "Literal"
 
         if original_pydantic.type == "object":
-            ClassWriter(original_pydantic).write(self.name + ".py")
+            ClassWriter(original_pydantic).write(self.name + ".py", module_name)
         return original_pydantic
