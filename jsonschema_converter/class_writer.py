@@ -20,7 +20,7 @@ class ClassWriter:
     def schema(self) -> PydanticSchemaModel:
         return self._schema
 
-    def write(self, file_name: str):
+    def write(self, file_name: str, module_name: str):
 
         pre_import_str = ""
         import_str = ""
@@ -66,14 +66,14 @@ class ClassWriter:
 
         if len(import_classes) > 0:
             for import_class in import_classes:
-                import_str += "from schemas."
+                import_str += f"from {module_name}."
                 import_str += import_class[0] + " import " + import_class[1]
                 import_str += '\n'
             import_str += '\n'
 
         string = pre_import_str + import_str + post_import_str
 
-        with open(join("schemas", file_name), "w") as f:
+        with open(join(module_name, file_name), "w") as f:
             f.write(string)
 
     def _format_docstring(self):

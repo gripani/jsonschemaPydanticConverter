@@ -10,33 +10,22 @@ pip install jsonschema-converter
 
 ## usage
 
-*main.py*
+script *main.py*
 ```python
-from argparse import ArgumentParser
-
-from jsonschema_converter.parse import parse_json
-
-
-def main(file_name: str):
-    parse_json(file_name)
-
-
-def parse_args():
-    argument_parser = ArgumentParser(
-        prog="JsonSchema2Pydantic",
-        description="creates classes from json_schema file"
-    )
-    argument_parser.add_argument("file_name")
-    args = argument_parser.parse_args()
-    return args.file_name
+from jsonschema_converter.parse import parse_json_schema
+from jsonschema_converter.utils import parse_args
 
 
 if __name__ == "__main__":
-    main(parse_args())
+    file_name, module_name = parse_args()
+    parse_json_schema(file_name, module_name)
+
+
 ```
 
+CLI
 ```bash
-python main.py myjsonschema.json
+python main.py --file_name myjsonschema.json --module_name schemas
 ```
 
 ## examples
