@@ -8,6 +8,10 @@ conversions from a json-schema file to pydantic classes
 pip install jsonschema-converter
 ```
 
+### requirements
+pydantic>=2.5.3
+loguru>=0.7.1
+
 ## usage
 
 script *main.py*
