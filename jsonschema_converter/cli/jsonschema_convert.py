@@ -3,5 +3,5 @@ from jsonschema_converter.utils import parse_args
 
 
 def convert():
-    file_name, module_name, verbose = parse_args()
-    parse_json_schema(file_name, module_name, verbose)
+    file_name, module_name = parse_args()
+    parse_json_schema(file_name, module_name)
